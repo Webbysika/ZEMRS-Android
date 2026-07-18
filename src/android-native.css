@@ -1,0 +1,8 @@
+.native-android body{min-width:1180px;background:#f3f6f4}
+.native-android header{padding-left:max(22px,env(safe-area-inset-left));padding-right:max(22px,env(safe-area-inset-right))}
+.native-android main{max-width:none;width:100%;padding:10px 14px 18px}
+.native-android .hero{padding:10px 16px;margin-bottom:8px}
+.native-android .cards article{min-height:68px}
+.native-android .grid{grid-template-columns:minmax(0,1.75fr) minmax(340px,.75fr)}
+.native-android #map{height:calc(100vh - 250px);min-height:600px}
+.native-android button,.native-android select,.native-android input,.native-android textarea{touch-action:manipulation}

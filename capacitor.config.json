@@ -1,0 +1,8 @@
+{
+  "appId": "zm.org.zemrs.monitor",
+  "appName": "ZEMRS",
+  "webDir": "android-dist",
+  "backgroundColor": "#0b5d3b",
+  "server": { "androidScheme": "https" },
+  "android": { "allowMixedContent": false }
+}

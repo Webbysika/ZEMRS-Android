@@ -1,0 +1,30 @@
+{
+  "name": "zemrs-election-monitor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "prepare-data": "node scripts/prepare-data.mjs",
+    "export-cloud-data": "node scripts/export-supabase-csv.mjs",
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "build:android": "vite build --config vite.config.android.js",
+    "android:sync": "npm run build:android && cap sync android",
+    "android:open": "cap open android",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.6.8",
+    "@capacitor/cli": "^7.6.8",
+    "@capacitor/core": "^7.6.8",
+    "@supabase/supabase-js": "^2.52.0",
+    "idb": "^8.0.3",
+    "leaflet": "^1.9.4",
+    "leaflet.markercluster": "^1.5.3"
+  },
+  "devDependencies": {
+    "shapefile": "^0.6.6",
+    "vite": "^7.0.0",
+    "vite-plugin-pwa": "^1.0.1"
+  }
+}

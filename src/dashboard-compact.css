@@ -1,0 +1,18 @@
+@media(min-width:901px){
+  main{padding-top:10px}
+  .hero{padding:11px 18px;margin-bottom:9px;border-radius:9px}
+  .hero h2{font-size:19px;margin-bottom:2px}
+  .hero p{font-size:13px}
+  .cards{gap:8px}
+  .cards article{min-height:72px;padding:10px 13px}
+  .cards strong{font-size:21px;margin-top:5px}
+  .progress{height:6px;margin:7px 0 9px}
+  .filters{padding:9px 12px;margin-bottom:9px}
+  .filters select,.filters button{padding-top:8px;padding-bottom:8px}
+  .grid{grid-template-columns:minmax(0,1.75fr) minmax(340px,.75fr);gap:10px}
+  #map{height:clamp(650px,76vh,900px)}
+}
+.leaflet-control-layers{border:0!important;border-radius:8px!important;box-shadow:0 3px 14px #102b1e30!important}
+.leaflet-control-layers-expanded{padding:9px 11px!important;color:#263b31;font-size:11px}
+.leaflet-control-layers label{margin:3px 0}
+.boundary-tooltip{border:0!important;background:#173d2d!important;color:#fff!important;font-size:11px!important;font-weight:700!important;box-shadow:0 2px 8px #0003!important}
