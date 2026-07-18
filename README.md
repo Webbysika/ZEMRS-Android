@@ -1,0 +1,2 @@
+# ZEMRS-Android
+offline apk
