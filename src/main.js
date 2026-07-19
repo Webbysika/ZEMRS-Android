@@ -16,7 +16,7 @@ import { signIn, signOut, getUser, getMyProfile, uploadSubmission, fetchCloudRes
 const isNativeAndroid=Capacitor.isNativePlatform();
 if(isNativeAndroid){
   document.documentElement.classList.add('native-android');
-  document.querySelector('meta[name="viewport"]')?.setAttribute('content','width=1280, initial-scale=1, minimum-scale=0.25, maximum-scale=3, user-scalable=yes, viewport-fit=cover');
+  document.querySelector('meta[name="viewport"]')?.setAttribute('content','width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover');
 }else registerSW({ immediate: true });
 
 const base = import.meta.env.BASE_URL;
@@ -180,7 +180,15 @@ function wireSubmit(){
     matches.innerHTML=found.map(s=>`<button type="button" data-id="${s.id}"><b>${s.station}</b><small>${s.pollingDistrict} · ${s.ward} · ${s.district}</small></button>`).join('');
     matches.querySelectorAll('button').forEach(b=>b.onclick=()=>selectStation(b.dataset.id));
   };
+  wireNumberInputs(document.querySelector('#resultForm'));
   document.querySelector('#resultForm').onsubmit=saveSubmission;
+}
+function wireNumberInputs(scope){
+  scope?.querySelectorAll('input[type="number"]').forEach(input=>{
+    input.addEventListener('focus',()=>{if(input.value==='0')input.value='';});
+    input.addEventListener('input',()=>{if(/^0\d+/.test(input.value))input.value=String(Number(input.value));});
+    input.addEventListener('blur',()=>{if(input.value==='')input.value='0';});
+  });
 }
 function selectStation(id){const s=stationById.get(id);document.querySelector('#stationId').value=id;document.querySelector('#stationSearch').value=s.station;document.querySelector('#matches').innerHTML='';document.querySelector('#stationCard').innerHTML=`<b>${s.station}</b><span>${s.pollingDistrict}</span><span>${s.ward} · ${s.constituency} · ${s.district} · ${s.province}</span><span>Registered voters: ${fmt(s.registered)}</span>`;}
 async function fileData(file){return file?new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file);}):null;}
@@ -210,13 +218,13 @@ function wireSupervisor(){
   document.querySelectorAll('[data-form]').forEach(b=>b.onclick=async()=>{const r=cloudResults.find(x=>x.id===b.dataset.form);try{const url=await signedFormUrl(r.photo_path);if(url)window.open(url,'_blank','noopener');}catch(e){alert(e.message);}});
 }
 
-async function settingsPage(){const user=await getUser();return `<section class="hero"><div><h2>Secure cloud synchronization</h2><p>Connected to ${SUPABASE_URL}</p></div></section>${user?`<section class="panel"><h3>Signed in</h3><p>${user.email}</p><button id="syncNow" class="primary">Synchronize now</button> <button id="logout">Sign out</button></section>`:`<form id="loginForm" class="panel form"><label class="wide">Monitor email<input id="email" type="email" required></label><label class="wide">Password<input id="password" type="password" required></label><button class="primary wide">Sign in and synchronize</button></form>`}`}
+async function settingsPage(){const user=await getUser();return `<section class="hero"><div><h2>Secure cloud synchronization</h2><p>Connected to ${SUPABASE_URL}</p></div></section>${user?`<section class="panel"><h3>Signed in</h3><p>${user.email}</p><button id="syncNow" class="primary">Synchronize now</button> <button id="logout">Sign out</button></section>`:`<form id="loginForm" class="panel form"><label class="wide">Username<input id="email" value="demo" autocomplete="username" required></label><label class="wide">Password<input id="password" type="password" value="12345678" autocomplete="current-password" required></label><p class="wide note">Temporary demonstration account</p><button class="primary wide">Sign in and synchronize</button></form>`}`}
 
 async function refreshCloud(){try{if(await getUser()){myProfile=await getMyProfile();cloudResults=await fetchCloudResults();}else{myProfile=null;cloudResults=[];}}catch(e){console.warn(e.message);}}
 async function syncResults(){if(!navigator.onLine||!(await getUser()))return;for(const r of results.filter(x=>x.syncStatus!=='Synced')){try{await uploadSubmission(r);r.syncStatus='Synced';await saveResult(r);}catch(e){console.warn(e.message);break;}}results=await listResults();await refreshCloud();}
 
 async function render(){
-  if(activeTab==='settings'){shell(await settingsPage());const login=document.querySelector('#loginForm');if(login)login.onsubmit=async e=>{e.preventDefault();try{await signIn(document.querySelector('#email').value,document.querySelector('#password').value);await syncResults();alert('Signed in and synchronized.');render();}catch(err){alert(err.message);}};const logout=document.querySelector('#logout');if(logout)logout.onclick=async()=>{await signOut();cloudResults=[];render();};const sync=document.querySelector('#syncNow');if(sync)sync.onclick=async()=>{await syncResults();alert('Synchronization completed.');render();};return;}
+  if(activeTab==='settings'){shell(await settingsPage());const login=document.querySelector('#loginForm');if(login)login.onsubmit=async e=>{e.preventDefault();try{const identity=document.querySelector('#email').value.trim();const email=identity.includes('@')?identity:`${identity}@zemrs.org`;await signIn(email,document.querySelector('#password').value);await syncResults();alert('Signed in and synchronized.');render();}catch(err){alert(err.message);}};const logout=document.querySelector('#logout');if(logout)logout.onclick=async()=>{await signOut();cloudResults=[];render();};const sync=document.querySelector('#syncNow');if(sync)sync.onclick=async()=>{await syncResults();alert('Synchronization completed.');render();};return;}
   shell(activeTab==='dashboard'?dashboard():activeTab==='submit'?submitPage():activeTab==='supervisor'?supervisorPage():recordsPage());
   if(activeTab==='dashboard'){setTimeout(()=>{initMap();document.querySelector('#apply').onclick=()=>{map.remove();initMap(document.querySelector('#province').value,document.querySelector('#status').value);};},0);}
   if(activeTab==='submit')wireSubmit();
